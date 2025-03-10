@@ -166,27 +166,30 @@ const ProductList: React.FC<ProductListProps> = ({
       aria-label={`Product list containing ${products.length} items`}
       aria-busy={isLoading}
     >
-      <FixedSizeGrid
-        columnCount={columnCount}
-        columnWidth={itemWidth}
-        height={Math.min(dimensions.height, rowCount * (itemHeight + gridGap))}
-        rowCount={rowCount}
-        rowHeight={itemHeight}
-        width={dimensions.width}
-        itemData={{
-          products,
-          columnCount,
-          gridGap,
-          onProductClick
-        }}
+      <div 
         role="grid"
         aria-rowcount={rowCount}
         aria-colcount={columnCount}
-        className="focus:outline-none focus:ring-2 focus:ring-blue-500"
+        className="h-full w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
         tabIndex={0}
       >
-        {Cell}
-      </FixedSizeGrid>
+        <FixedSizeGrid
+          columnCount={columnCount}
+          columnWidth={itemWidth}
+          height={Math.min(dimensions.height, rowCount * (itemHeight + gridGap))}
+          rowCount={rowCount}
+          rowHeight={itemHeight}
+          width={dimensions.width}
+          itemData={{
+            products,
+            columnCount,
+            gridGap,
+            onProductClick
+          }}
+        >
+          {Cell}
+        </FixedSizeGrid>
+      </div>
     </div>
   );
 };
