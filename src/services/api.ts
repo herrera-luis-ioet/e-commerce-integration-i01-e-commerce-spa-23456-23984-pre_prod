@@ -6,8 +6,11 @@
 
 import axios, { AxiosError, AxiosInstance, AxiosResponse, InternalAxiosRequestConfig } from 'axios';
 
-// API base URL - should match the one used in the Redux store
-const API_BASE_URL = '/api';
+// Get API base URL from environment variables with fallback
+const API_BASE_URL = import.meta.env.VITE_API_URL || '/api';
+
+// Log the API URL being used (can be removed in production)
+console.log(`Using API URL: ${API_BASE_URL}`);
 
 // Create a configured Axios instance
 const apiClient: AxiosInstance = axios.create({

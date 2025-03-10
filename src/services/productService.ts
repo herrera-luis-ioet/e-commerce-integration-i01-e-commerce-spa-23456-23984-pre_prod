@@ -1,10 +1,10 @@
 /**
  * Product Service
  * Provides methods for interacting with the product API endpoints
- * Currently using mock data for development
+ * Using real API endpoints with fallback to mock data when needed
  */
 
-import { handleApiError } from './api';
+import apiClient, { handleApiError } from './api';
 import { mockProducts, filterMockProducts, paginateMockProducts } from './mockData';
 import {
   ProductsResponse,
@@ -26,23 +26,22 @@ const productService = {
    */
   getProducts: async (params?: GetProductsParams): Promise<ProductsResponse> => {
     try {
-      // For development, use mock data instead of API call
-      // Simulate network delay
-      await new Promise(resolve => setTimeout(resolve, 300));
-      
-      // Apply filters if provided
-      let filteredProducts = params ? filterMockProducts(mockProducts, params) : [...mockProducts];
-      
-      // Apply pagination
-      const page = params?.page || 1;
-      const limit = params?.limit || 10;
-      const result = paginateMockProducts(filteredProducts, page, limit);
-      
-      return result;
-      
-      // Original API call (commented out for now)
-      // const response = await apiClient.get<ProductsResponse>('/products', { params });
-      // return response.data;
+      // Use real API endpoint
+      try {
+        const response = await apiClient.get<ProductsResponse>('/products', { params });
+        return response.data;
+      } catch (apiError) {
+        console.warn('API call failed, falling back to mock data:', apiError);
+        
+        // Fallback to mock data if API call fails
+        // Apply filters if provided
+        let filteredProducts = params ? filterMockProducts(mockProducts, params) : [...mockProducts];
+        
+        // Apply pagination
+        const page = params?.page || 1;
+        const limit = params?.limit || 10;
+        return paginateMockProducts(filteredProducts, page, limit);
+      }
     } catch (error) {
       throw new Error(handleApiError(error));
     }
@@ -56,21 +55,22 @@ const productService = {
    */
   getProductById: async (productId: string): Promise<ProductResponse> => {
     try {
-      // For development, use mock data instead of API call
-      // Simulate network delay
-      await new Promise(resolve => setTimeout(resolve, 200));
-      
-      const product = mockProducts.find(p => p.id === productId);
-      
-      if (!product) {
-        throw new Error(`Product with ID ${productId} not found`);
+      // Use real API endpoint
+      try {
+        const response = await apiClient.get<ProductResponse>(`/products/${productId}`);
+        return response.data;
+      } catch (apiError) {
+        console.warn(`API call for product ${productId} failed, falling back to mock data:`, apiError);
+        
+        // Fallback to mock data if API call fails
+        const product = mockProducts.find(p => p.id === productId);
+        
+        if (!product) {
+          throw new Error(`Product with ID ${productId} not found`);
+        }
+        
+        return { product };
       }
-      
-      return { product };
-      
-      // Original API call (commented out for now)
-      // const response = await apiClient.get<ProductResponse>(`/products/${productId}`);
-      // return response.data;
     } catch (error) {
       throw new Error(handleApiError(error));
     }
@@ -86,24 +86,25 @@ const productService = {
    */
   searchProducts: async (query: string, page?: number, limit?: number): Promise<ProductsResponse> => {
     try {
-      // For development, use mock data instead of API call
-      // Simulate network delay
-      await new Promise(resolve => setTimeout(resolve, 250));
-      
-      // Filter products by search query
-      const filteredProducts = mockProducts.filter(product => 
-        product.name.toLowerCase().includes(query.toLowerCase()) || 
-        product.description.toLowerCase().includes(query.toLowerCase())
-      );
-      
-      // Apply pagination
-      return paginateMockProducts(filteredProducts, page || 1, limit || 10);
-      
-      // Original API call (commented out for now)
-      // const response = await apiClient.get<ProductsResponse>('/products/search', {
-      //   params: { query, page, limit }
-      // });
-      // return response.data;
+      // Use real API endpoint
+      try {
+        const response = await apiClient.get<ProductsResponse>('/products/search', {
+          params: { query, page, limit }
+        });
+        return response.data;
+      } catch (apiError) {
+        console.warn(`Search API call for "${query}" failed, falling back to mock data:`, apiError);
+        
+        // Fallback to mock data if API call fails
+        // Filter products by search query
+        const filteredProducts = mockProducts.filter(product => 
+          product.name.toLowerCase().includes(query.toLowerCase()) || 
+          product.description.toLowerCase().includes(query.toLowerCase())
+        );
+        
+        // Apply pagination
+        return paginateMockProducts(filteredProducts, page || 1, limit || 10);
+      }
     } catch (error) {
       throw new Error(handleApiError(error));
     }
