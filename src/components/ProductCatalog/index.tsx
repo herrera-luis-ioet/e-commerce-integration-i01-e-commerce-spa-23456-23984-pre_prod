@@ -72,7 +72,7 @@ const ProductCatalog: React.FC<ProductCatalogProps> = ({
   
   // Extract unique categories and brands from products
   useEffect(() => {
-    if (products && products.length > 0) {
+    if (products && Array.isArray(products) && products.length > 0) {
       const categories = Array.from(new Set(products.map(p => p.category)));
       const brands = Array.from(new Set(products.filter(p => p.brand).map(p => p.brand as string)));
       
@@ -151,7 +151,7 @@ const ProductCatalog: React.FC<ProductCatalogProps> = ({
         <header className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900">{title}</h1>
           <p className="text-gray-600 mt-2">
-            {loading ? 'Loading products...' : `${filteredProducts ? filteredProducts.length : 0} products available`}
+            {loading ? 'Loading products...' : `${filteredProducts && Array.isArray(filteredProducts) ? filteredProducts.length : 0} products available`}
           </p>
         </header>
         
@@ -160,8 +160,8 @@ const ProductCatalog: React.FC<ProductCatalogProps> = ({
           {showFilters && (
             <aside className="w-full md:w-1/4 lg:w-1/5">
               <ProductFilter
-                availableCategories={availableCategories}
-                availableBrands={availableBrands}
+                availableCategories={availableCategories || []}
+                availableBrands={availableBrands || []}
               />
             </aside>
           )}
@@ -197,7 +197,7 @@ const ProductCatalog: React.FC<ProductCatalogProps> = ({
             
             {/* Product List */}
             <ProductList
-              products={filteredProducts || []}
+              products={filteredProducts && Array.isArray(filteredProducts) ? filteredProducts : []}
               loading={loading}
               error={error}
               onProductClick={handleProductClick}
