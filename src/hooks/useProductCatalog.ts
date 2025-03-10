@@ -29,10 +29,10 @@ export const useProductCatalog = () => {
 
   // Fetch products on initial load
   useEffect(() => {
-    if (products.length === 0 && !loading) {
+    if (!products || products.length === 0 && !loading) {
       dispatch(fetchProducts());
     }
-  }, [dispatch, products.length, loading]);
+  }, [dispatch, products, loading]);
 
   /**
    * Fetch a specific product by ID
