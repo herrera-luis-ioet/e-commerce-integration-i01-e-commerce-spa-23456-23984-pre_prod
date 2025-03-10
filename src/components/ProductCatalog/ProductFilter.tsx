@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { FilterOptions, SortOption } from '../../types/product.types';
 import useProductCatalog from '../../hooks/useProductCatalog';
 

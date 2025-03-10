@@ -1,9 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Product } from '../../types/product.types';
 import useProductCatalog from '../../hooks/useProductCatalog';
 import ProductList from './ProductList';
 import ProductFilter from './ProductFilter';
-import Loader from '../common/Loader';
 
 interface ProductCatalogProps {
   title?: string;
@@ -39,7 +38,6 @@ const ProductCatalog: React.FC<ProductCatalogProps> = ({
     filteredProducts,
     loading,
     error,
-    filterOptions,
     updateFilters,
     refreshProducts,
     products,

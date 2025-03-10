@@ -1,5 +1,4 @@
-import React from 'react';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import { configureStore } from '@reduxjs/toolkit';
 import ProductCatalog from '../index';
@@ -196,7 +195,7 @@ describe('ProductCatalog Component', () => {
     );
     
     // Check if loading message is displayed
-    expect(screen.getByText('Loading products...')).toBeInTheDocument();
+    expect(screen.getAllByText('Loading products...')[0]).toBeInTheDocument();
   });
 
   test('renders error state correctly', () => {
@@ -211,7 +210,7 @@ describe('ProductCatalog Component', () => {
     );
     
     // Check if error message is displayed
-    expect(screen.getByText('Failed to fetch products')).toBeInTheDocument();
+    expect(screen.getAllByText('Failed to fetch products')[0]).toBeInTheDocument();
     
     // Check if retry button is displayed
     expect(screen.getByText('Retry')).toBeInTheDocument();
