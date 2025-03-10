@@ -29,7 +29,7 @@ export const useProductCatalog = () => {
 
   // Fetch products on initial load
   useEffect(() => {
-    if (!products || products.length === 0 && !loading) {
+    if (!products || (Array.isArray(products) && products.length === 0 && !loading)) {
       dispatch(fetchProducts());
     }
   }, [dispatch, products, loading]);
@@ -146,15 +146,16 @@ export const useProductCatalog = () => {
     dispatch(fetchProducts());
   }, [dispatch]);
 
+  // Ensure we always return valid data structures even if the state is not fully initialized
   return {
     // State
-    products,
-    filteredProducts,
+    products: products || [],
+    filteredProducts: filteredProducts || [],
     selectedProduct,
     loading,
     error,
-    filterOptions,
-    pagination,
+    filterOptions: filterOptions || {},
+    pagination: pagination || { currentPage: 1, totalPages: 1, itemsPerPage: 10, totalItems: 0 },
     
     // Actions
     getProductById,
