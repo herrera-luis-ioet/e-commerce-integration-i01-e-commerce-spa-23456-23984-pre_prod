@@ -8,10 +8,7 @@ import {
   ProductsResponse,
   ProductResponse
 } from '../../types/product.types';
-import axios from 'axios';
-
-// API base URL - replace with your actual API endpoint
-const API_BASE_URL = '/api';
+import productService from '../../services/productService';
 
 // Async thunks for API operations
 export const fetchProducts = createAsyncThunk<
@@ -19,15 +16,9 @@ export const fetchProducts = createAsyncThunk<
   GetProductsParams | undefined
 >('products/fetchProducts', async (params, { rejectWithValue }) => {
   try {
-    const response = await axios.get<ProductsResponse>(`${API_BASE_URL}/products`, { 
-      params 
-    });
-    return response.data;
+    return await productService.getProducts(params);
   } catch (error) {
-    if (axios.isAxiosError(error)) {
-      return rejectWithValue(error.response?.data || error.message);
-    }
-    return rejectWithValue('An unknown error occurred');
+    return rejectWithValue(error instanceof Error ? error.message : 'An unknown error occurred');
   }
 });
 
@@ -36,13 +27,9 @@ export const fetchProductById = createAsyncThunk<
   string
 >('products/fetchProductById', async (productId, { rejectWithValue }) => {
   try {
-    const response = await axios.get<ProductResponse>(`${API_BASE_URL}/products/${productId}`);
-    return response.data;
+    return await productService.getProductById(productId);
   } catch (error) {
-    if (axios.isAxiosError(error)) {
-      return rejectWithValue(error.response?.data || error.message);
-    }
-    return rejectWithValue('An unknown error occurred');
+    return rejectWithValue(error instanceof Error ? error.message : 'An unknown error occurred');
   }
 });
 

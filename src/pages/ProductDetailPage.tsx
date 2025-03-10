@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { useAppSelector, useAppDispatch } from '../store/hooks';
+import { useAppSelector } from '../store/hooks';
 import { Product } from '../types/product.types';
 import Loader from '../components/common/Loader';
 
@@ -11,7 +11,6 @@ import Loader from '../components/common/Loader';
 const ProductDetailPage: React.FC = () => {
   const { productId } = useParams<{ productId: string }>();
   const navigate = useNavigate();
-  const dispatch = useAppDispatch();
   
   // Get products from Redux store
   const { products, loading } = useAppSelector((state) => state.products);

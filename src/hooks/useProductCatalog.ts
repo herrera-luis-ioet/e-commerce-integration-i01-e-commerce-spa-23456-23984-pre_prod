@@ -9,7 +9,7 @@ import {
   setItemsPerPage,
   resetFilters
 } from '../store/slices/productSlice';
-import { FilterOptions, Product, SortOption } from '../types/product.types';
+import { FilterOptions, SortOption } from '../types/product.types';
 
 /**
  * Custom hook for managing product catalog functionality
