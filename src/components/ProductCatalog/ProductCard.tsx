@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import { Product } from '../../types/product.types';
 
 interface ProductCardProps {
@@ -36,12 +36,12 @@ const ProductCard: React.FC<ProductCardProps> = ({
   // Calculate discounted price if applicable
   const discountedPrice = discount ? price - (price * discount / 100) : null;
   
-  // Handle click event
-  const handleClick = () => {
+  // Handle click event with useCallback for optimization
+  const handleClick = useCallback(() => {
     if (onClick) {
       onClick(product);
     }
-  };
+  }, [onClick, product]);
 
   // Generate star rating display
   const renderRating = () => {
@@ -88,10 +88,16 @@ const ProductCard: React.FC<ProductCardProps> = ({
 
   return (
     <div 
-      className={`bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300 ${className}`}
+      className={`bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300 ${className} focus:outline-none focus:ring-2 focus:ring-blue-500`}
       onClick={handleClick}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          handleClick();
+        }
+      }}
       role="article"
-      aria-label={`Product: ${name}`}
+      aria-label={`Product: ${name}. Price: $${discountedPrice ? discountedPrice.toFixed(2) : price.toFixed(2)}. Rating: ${rating} out of 5.`}
       tabIndex={0}
       data-testid={`product-card-${id}`}
     >
@@ -171,9 +177,31 @@ const ProductCard: React.FC<ProductCardProps> = ({
   );
 };
 
-// Use React.memo to prevent unnecessary re-renders
+// Use React.memo with enhanced comparison function to prevent unnecessary re-renders
 export default React.memo(ProductCard, (prevProps, nextProps) => {
-  // Only re-render if the product ID changes or if the product data changes
-  return prevProps.product.id === nextProps.product.id && 
-         prevProps.product.updatedAt === nextProps.product.updatedAt;
+  // Only re-render if relevant product properties change
+  const prevProduct = prevProps.product;
+  const nextProduct = nextProps.product;
+  
+  // Check if onClick handler changed
+  if (prevProps.onClick !== nextProps.onClick) {
+    return false;
+  }
+  
+  // Check if className changed
+  if (prevProps.className !== nextProps.className) {
+    return false;
+  }
+  
+  // Check essential product properties that would affect rendering
+  return prevProduct.id === nextProduct.id && 
+         prevProduct.name === nextProduct.name &&
+         prevProduct.price === nextProduct.price &&
+         prevProduct.imageUrl === nextProduct.imageUrl &&
+         prevProduct.rating === nextProduct.rating &&
+         prevProduct.stock === nextProduct.stock &&
+         prevProduct.discount === nextProduct.discount &&
+         prevProduct.isNew === nextProduct.isNew &&
+         prevProduct.isFeatured === nextProduct.isFeatured &&
+         prevProduct.updatedAt === nextProduct.updatedAt;
 });

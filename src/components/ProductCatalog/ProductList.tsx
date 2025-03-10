@@ -3,6 +3,7 @@ import { FixedSizeGrid } from 'react-window';
 import { Product } from '../../types/product.types';
 import ProductCard from './ProductCard';
 import Loader from '../common/Loader';
+import { useAppSelector } from '../../store/hooks';
 
 interface ProductListProps {
   products: Product[];
@@ -70,12 +71,23 @@ const ProductList: React.FC<ProductListProps> = ({
   const rowCount = Math.ceil(products.length / columnCount);
 
   // Render each cell in the grid
-  const Cell = ({ columnIndex, rowIndex, style }: { columnIndex: number; rowIndex: number; style: React.CSSProperties }) => {
+  const Cell = ({ columnIndex, rowIndex, style, data }: { 
+    columnIndex: number; 
+    rowIndex: number; 
+    style: React.CSSProperties;
+    data: {
+      products: Product[];
+      columnCount: number;
+      gridGap: number;
+      onProductClick?: (product: Product) => void;
+    }
+  }) => {
+    const { products, columnCount, gridGap, onProductClick } = data;
     const index = rowIndex * columnCount + columnIndex;
     
     // Return empty cell if index is out of bounds
     if (index >= products.length) {
-      return <div style={style} />;
+      return <div style={style} aria-hidden="true" />;
     }
     
     const product = products[index];
@@ -90,7 +102,12 @@ const ProductList: React.FC<ProductListProps> = ({
     };
     
     return (
-      <div style={adjustedStyle}>
+      <div 
+        style={adjustedStyle}
+        role="gridcell"
+        aria-rowindex={rowIndex + 1}
+        aria-colindex={columnIndex + 1}
+      >
         <ProductCard 
           product={product} 
           onClick={onProductClick}
@@ -137,12 +154,17 @@ const ProductList: React.FC<ProductListProps> = ({
     );
   }
 
+  // Get the loading state from Redux store for additional context
+  const { loading: storeLoading } = useAppSelector(state => state.products);
+  const isLoading = loading || storeLoading;
+
   return (
     <div 
       ref={containerRef} 
       className={`w-full h-full min-h-[600px] ${className}`}
       data-testid="product-list"
       aria-label={`Product list containing ${products.length} items`}
+      aria-busy={isLoading}
     >
       <FixedSizeGrid
         columnCount={columnCount}
@@ -151,7 +173,17 @@ const ProductList: React.FC<ProductListProps> = ({
         rowCount={rowCount}
         rowHeight={itemHeight}
         width={dimensions.width}
-        itemData={products}
+        itemData={{
+          products,
+          columnCount,
+          gridGap,
+          onProductClick
+        }}
+        role="grid"
+        aria-rowcount={rowCount}
+        aria-colcount={columnCount}
+        className="focus:outline-none focus:ring-2 focus:ring-blue-500"
+        tabIndex={0}
       >
         {Cell}
       </FixedSizeGrid>
