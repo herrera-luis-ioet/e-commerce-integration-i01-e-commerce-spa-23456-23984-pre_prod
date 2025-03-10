@@ -4,7 +4,7 @@
  * error handling, and response transformation
  */
 
-import axios, { AxiosError, AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios';
+import axios, { AxiosError, AxiosInstance, AxiosResponse, InternalAxiosRequestConfig } from 'axios';
 
 // API base URL - should match the one used in the Redux store
 const API_BASE_URL = '/api';
@@ -21,7 +21,7 @@ const apiClient: AxiosInstance = axios.create({
 
 // Request interceptor for authentication
 apiClient.interceptors.request.use(
-  (config: AxiosRequestConfig): AxiosRequestConfig => {
+  (config: InternalAxiosRequestConfig): InternalAxiosRequestConfig => {
     // Get token from localStorage or other storage mechanism
     const token = localStorage.getItem('auth_token');
     
