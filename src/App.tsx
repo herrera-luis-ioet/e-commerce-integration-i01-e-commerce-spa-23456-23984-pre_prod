@@ -1,5 +1,5 @@
 import React from 'react';
-import { Routes, Route } from 'react-router-dom';
+import AppRoutes from './routes';
 
 const App: React.FC = () => {
   return (
@@ -8,9 +8,7 @@ const App: React.FC = () => {
         <h1 className="text-2xl font-bold">Product Catalog Component</h1>
       </header>
       <main className="container mx-auto p-4">
-        <Routes>
-          <Route path="/" element={<div>Product Catalog will be displayed here</div>} />
-        </Routes>
+        <AppRoutes />
       </main>
     </div>
   );
